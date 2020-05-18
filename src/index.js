@@ -1,6 +1,10 @@
 const http = require('http')
 const urlParser = require('url')
 
+/**
+ * 
+ * @param {function} handlerFunc 
+ */
 function Handler(handlerFunc) {
     this.middlewares = []
     this.handlerFunc = handlerFunc
@@ -18,6 +22,10 @@ function Handler(handlerFunc) {
         this.middlewares.length ? this.middlewares[0](req, res, next) : this.handlerFunc(req, res)
     }
 
+    /**
+     * adds a middleware to this handler
+     * @param {function} newMiddleware middleware function
+     */
     this.registerMiddleWare = (newMiddleware) => {
         if (typeof newMiddleware !== 'function') {
             throw new Error('only callback functions can be registered as middleware.')
@@ -27,6 +35,10 @@ function Handler(handlerFunc) {
 
 }
 
+/**
+ * 
+ * @param {number} port 
+ */
 function Router(port) {
     this.port = port
     this.routesToHandlers = {
@@ -47,37 +59,43 @@ function Router(port) {
             console.info(`Server is listening on http://localhost:${port}`)
         })
     }
-
-    this.registerRoute = (route, callback, method) => {
-        if (typeof callback !== 'function') {
+    /**
+     * @param {string} route  path to register the handler to
+     * @param {function} handler function that handler the incoming request
+     * @param {string} method get or post
+     */
+    this.registerRoute = (route, handler, method) => {
+        if (typeof handler !== 'function') {
             throw new Error('Callback function must be a function.')
         }
-        this.routesToHandlers[method][route] = new Handler(callback)
+        this.routesToHandlers[method][route] = new Handler(handler)
         this.registerRouteMiddlewareToHandler(route, method)
     }
 
     /**
      * register a callback to a GET route
-     * @param route :string - the path of the route
-     * @param callback:(req, res) - a callback function to handle the request
+     * @param {string} route  the path of the route
+     * @param {handler} handler a handler function to handle the request
      * @returns void
      */
-    this.get = (route, callback) => {
-        this.registerRoute(route, callback, 'get')
+    this.get = (route, handler) => {
+        this.registerRoute(route, handler, 'get')
     }
 
     /**
       * register a callback to a POST route
-      * @param route :string - the path of the route
-      * @param callback:(req, res) - a callback function to handle the request
+      * @param {string} route the path of the route
+      * @param {function} handler a callback function to handle the request
       * @returns void
       */
-    this.post = (route, callback) => {
-        this.registerRoute(route, callback, 'post')
+    this.post = (route, handler) => {
+        this.registerRoute(route, handler, 'post')
     }
 
     /**
-     * 
+     * registers a middleware to a route
+     * @param {string} route the path of the route
+     * @param {function} middleware a middleware function (req,res,next)
      */
     this.use = (route, middleware) => {
         if (this.routesToMiddleware[route]) {
@@ -101,6 +119,12 @@ function Router(port) {
         }
     }
 
+    /**
+     * get handler that handles the requests route.
+     * @default to this.defaultHandler
+     * @param {http.ClientRequest} req
+     * 
+     */
     this.getHandler = (req) => {
         const url = urlParser.parse(req.url, true);
         const method = req.method.toLowerCase()
@@ -121,7 +145,11 @@ function Router(port) {
         res.end(`${method} ${url.pathname} is not supported.`, 'utf-8')
     })
 
-
+    /**
+    * registers middlewares of a route to a ne handler
+    * @param {string} route the path of the route
+    * @param {string} method get/post
+    */
     this.registerRouteMiddlewareToHandler = (route, method) => {
         if (route in this.routesToMiddleware) {
             for (const middy of this.routesToMiddleware[route]) {

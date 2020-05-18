@@ -26,7 +26,7 @@ router.use('/test', (req, res, next) => {
 
 /** returns hello with name */
 router.post('/hello', (req, res) => {
-    req.on('data' , (chunk) => {
+    req.on('data', (chunk) => {
         const name = Buffer.from(chunk, 'utf-8').toString()
         res.write(`Hi ${name}!`)
         res.end()
@@ -37,10 +37,10 @@ router.post('/hello', (req, res) => {
  *  return posted object at 'a' property
  */
 router.post('/haves-a', (req, res) => {
-    if(req.body && req.body.a){
+    if (req.body && req.body.a) {
         res.write(req.body.a)
         res.end()
-    } else{
+    } else {
         res.write('nope')
         res.end()
     }
@@ -61,6 +61,6 @@ const parseBody = (req, res, next) => {
         next()
     }
 }
-router.use('/haves-a',parseBody )
+router.use('/haves-a', parseBody)
 
 router.start()
