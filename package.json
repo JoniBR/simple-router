@@ -4,7 +4,7 @@
   "description": "simple router with middlewar and routing",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack -p"
   },
   "author": "Yoni Braslaver",
   "license": "ISC"
