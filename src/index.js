@@ -89,7 +89,6 @@ function Router(port) {
         for (const handlerRoute in this.routesToHandlers['get']) {
             if (handlerRoute === route) {
                 const handler = this.routesToHandlers['get'][route]
-                console.log('registering middy to existing routes')
                 handler.registerMiddleWare(middleware)
             }
         }
@@ -125,7 +124,6 @@ function Router(port) {
 
     this.registerRouteMiddlewareToHandler = (route, method) => {
         if (route in this.routesToMiddleware) {
-            console.log('registering middy to new routes')
             for (const middy of this.routesToMiddleware[route]) {
                 this.routesToHandlers[method][route].registerMiddleWare(middy)
             }
