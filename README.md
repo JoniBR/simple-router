@@ -1,5 +1,6 @@
 
 
+
 # Deel Backend Task
 
 A router, similar to express, where you can register middlewares with various paths on it and they will be executed properly.
@@ -45,4 +46,4 @@ register middlewares
     })
     
 
-> For more examples checkout the example.js file
+> For more examples checkout the example.js file `node examples.js` will run the example server.
